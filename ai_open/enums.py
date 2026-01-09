@@ -12,3 +12,5 @@ class GPTModel(Enum):
     GPT_4_TURBO = 'gpt-4-turbo'
     WHISPER = 'whisper-1'
     GPT_IMAGE = 'dall-e-3'
+    GPT_4O_MINI_TTS = "gpt-4o-mini-tts"
+

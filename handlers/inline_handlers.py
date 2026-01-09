@@ -2,16 +2,16 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command, CommandObject
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from aiogram.types.input_file import FSInputFile
-from keyboards import ikb_main_menu, ikb_random, ikb_cancel_gpt, ikb_talk_menu, ikb_talk_back, ikb_quiz_menu
+from keyboards import ikb_main_menu, ikb_random, ikb_cancel_gpt, ikb_talk_menu, ikb_talk_back, ikb_quiz_menu, ikb_translate_menu, ikb_translate_back
 import config
 from utils import FileManager
 from utils.enum_path import Path
 from ai_open import chat_gpt
 from ai_open.messages import GPTMessage, GPTRole
 from aiogram.enums.chat_action import ChatAction
-from keyboards.callback_data import CallbackMenu, CallbackTalk, CallbackQuiz
+from keyboards.callback_data import CallbackMenu, CallbackTalk, CallbackQuiz, CallbackTranslate
 from aiogram.fsm.context import FSMContext
-from .fsm import GPTRequest, CelebrityTalk, Quiz
+from .fsm import GPTRequest, CelebrityTalk, Quiz, Translator, GPTVoice, GPTImage
 
 inline_router = Router()
 
@@ -134,4 +134,71 @@ async def select_subject(callback: CallbackQuery, callback_data: CallbackQuiz, s
         chat_id=callback.from_user.id,
         message_id=callback.message.message_id,
         reply_markup=ikb_talk_back(),
+    )
+
+@inline_router.callback_query(CallbackMenu.filter(F.button == 'translate'))
+async def translate_menu(callback: CallbackQuery, callback_data: CallbackMenu, state: FSMContext, bot: Bot):
+    await state.clear()
+    await bot.edit_message_media(
+        media=InputMediaPhoto(
+            media=FSInputFile(Path.IMAGES.value.format(file=callback_data.button)),
+            caption=FileManager.read_txt(Path.MESSAGES, callback_data.button),
+        ),
+        chat_id=callback.from_user.id,
+        message_id=callback.message.message_id,
+        reply_markup=ikb_translate_menu(),
+    )
+
+@inline_router.callback_query(CallbackTranslate.filter(F.button == 'translate'))
+async def select_language(callback: CallbackQuery, callback_data: CallbackTranslate, state: FSMContext, bot: Bot):
+    await callback.answer()
+    await state.set_state(Translator.translate)
+    await state.update_data(
+        language = callback_data.language,
+        edit_chat_id = callback.from_user.id,
+        edit_msg_id = callback.message.message_id,
+    )
+
+    await bot.edit_message_media(
+        media=InputMediaPhoto(
+            media=FSInputFile(Path.IMAGES.value.format(file=callback_data.button)),
+            caption='Ok, send me a text , I will translate it',
+        ),
+        chat_id=callback.from_user.id,
+        message_id=callback.message.message_id,
+        reply_markup=ikb_translate_back(),
+    )
+
+@inline_router.callback_query(CallbackMenu.filter(F.button == 'voice'))
+async def gpt_voice_menu(callback: CallbackQuery, callback_data: CallbackMenu, state: FSMContext, bot: Bot):
+    await state.set_state(GPTVoice.wait_for_voice)
+    await state.update_data(
+        chat_id = callback.message.chat.id,
+        message_id=callback.message.message_id,
+    )
+    await bot.edit_message_media(
+        media=InputMediaPhoto(
+            media=FSInputFile(Path.IMAGES.value.format(file='gpt')),
+            caption = 'Please send me a voice message, I will answer you',
+        ),
+        chat_id=callback.from_user.id,
+        message_id=callback.message.message_id,
+        reply_markup = ikb_cancel_gpt(),
+    )
+
+@inline_router.callback_query(CallbackMenu.filter(F.button == 'picture'))
+async def gpt_voice_menu(callback: CallbackQuery, callback_data: CallbackMenu, state: FSMContext, bot: Bot):
+    await state.set_state(GPTImage.wait_for_image)
+    await state.update_data(
+        chat_id = callback.message.chat.id,
+        message_id=callback.message.message_id,
+    )
+    await bot.edit_message_media(
+        media=InputMediaPhoto(
+            media=FSInputFile(Path.IMAGES.value.format(file='gpt')),
+            caption = 'Please send me picture, I will describe it',
+        ),
+        chat_id=callback.from_user.id,
+        message_id=callback.message.message_id,
+        reply_markup = ikb_cancel_gpt(),
     )

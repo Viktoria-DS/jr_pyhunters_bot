@@ -1,3 +1,6 @@
+import base64
+import io
+
 import httpx
 import openai
 from aiogram import Bot
@@ -47,16 +50,60 @@ class GPTService:
                 text=str(e),
         )
 
-# async def transcript_voice(self, file, bot: Bot):
-# try:
-# with open(file, "rb") as audio_file:
-# transcript = await self._client.audio.transcriptions.create(
-# model=GPTModel.WHISPER.value,
-# file=audio_file
-# )
-# return transcript.text
-# except Exception as e:
-# await bot.send_message(
-# chat_id=config.ADMIN_ID,
-# text=str(e),
-# )
+    async def voice_to_text (self,ogg_bytes, bot: Bot):
+        try:
+            audio_buf = io.BytesIO(ogg_bytes)
+            audio_buf.name = 'voice.ogg'
+            audio_buf.seek(0)
+
+            response = await self._client.audio.transcriptions.create(
+                model = "whisper-1",
+                file = audio_buf,
+            )
+            return response.text or ""
+        except Exception as e:
+            await bot.send_message(
+                chat_id = config.ADMIN_ID,
+                text = str(e)
+            )
+
+    async def text_to_voice(self, response: str, voice: str, response_format: str, bot: Bot) -> bytes:
+        try:
+            resp = await self._client.audio.speech.create(
+                    model = "gpt-4o-mini-tts",
+                    voice = voice,
+                    input = response,
+                    response_format= response_format,
+            )
+            if hasattr(resp, 'read'):
+                return resp.read()
+            if hasattr(resp, 'content'):
+                return resp.content
+            return bytes(resp)
+        except Exception as e:
+            await bot.send_message(
+                chat_id = config.ADMIN_ID,
+                text = str(e)
+            )
+            return b""
+    async def image_to_text (self, image_bytes: bytes, instruction: str,  bot: Bot) -> str:
+        try:
+            picture_bytes = base64.b64encode(image_bytes).decode("utf-8")
+            data_url = f"data:image/jpg;base64,{picture_bytes}"
+            resp = await self._client.responses.create(
+                model = "gpt-4-turbo",
+                messages = [{
+                    "role": "user",
+                    "content": [{
+                        "type": "text", "text": instruction,
+                        "type": "image_url", "image_url": data_url
+                    }],
+                }],
+            )
+            return resp.choices[0].message.content
+        except Exception as e:
+            await bot.send_message(
+                chat_id = config.ADMIN_ID,
+                text = str(e)
+            )
+

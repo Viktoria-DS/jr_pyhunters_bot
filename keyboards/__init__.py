@@ -1,1 +1,2 @@
-from .inline_keyboards import ikb_main_menu, ikb_random, ikb_gpt_menu, ikb_cancel_gpt, ikb_talk_menu, ikb_talk_back, ikb_quiz_menu, ikb_quiz_navigation
+from .inline_keyboards import (ikb_main_menu, ikb_random, ikb_gpt_menu, ikb_cancel_gpt, ikb_talk_menu, ikb_talk_back, ikb_quiz_menu, ikb_quiz_navigation, ikb_translate_menu,
+                               ikb_translate_back, ikb_voice_gpt_menu, ikb_picture_gpt_menu)

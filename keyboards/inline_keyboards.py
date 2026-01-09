@@ -1,6 +1,6 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from collections import namedtuple
-from .callback_data import CallbackMenu, CallbackTalk, CallbackQuiz
+from .callback_data import CallbackMenu, CallbackTalk, CallbackQuiz, CallbackTranslate
 Button = namedtuple('Button', ['text', 'callback'])
 import os
 from utils.enum_path import Path
@@ -10,10 +10,13 @@ from utils import file_manager, FileManager
 def ikb_main_menu():
     keyboard = InlineKeyboardBuilder()
     buttons = [
-        Button('Random fact', 'random'),
-        Button('Ask GPT', 'gpt'),
-        Button('Talk with a celebrity', 'talk'),
-        Button('Quiz', 'quiz'),
+        Button('Рандомный факт', 'random'),
+        Button('Разговор с ChatGPT', 'gpt'),
+        Button('Диалог с известной личностью', 'talk'),
+        Button('Квиз', 'quiz'),
+        Button('Переводчик', 'translate'),
+        Button('Голосовой разговор с ChatGPT', 'voice'),
+        Button('Picture recognition', 'picture')
     ]
 
     for button in buttons:
@@ -27,8 +30,8 @@ def ikb_main_menu():
 def ikb_random():
     keyboard = InlineKeyboardBuilder()
     buttons = [
-        Button('I want another fact', 'random'),
-        Button('Finish', 'start'),
+        Button('Подобрать другой интересный факт', 'random'),
+        Button('Закончить', 'start'),
     ]
     for button in buttons:
         keyboard.button(
@@ -41,8 +44,8 @@ def ikb_random():
 def ikb_gpt_menu():
     keyboard = InlineKeyboardBuilder()
     buttons = [
-        Button('Another request', 'gpt'),
-        Button('Finish', 'start'),
+        Button('Сделать ещё один запрос', 'gpt'),
+        Button('Закончить', 'start'),
     ]
     for button in buttons:
         keyboard.button(
@@ -54,7 +57,7 @@ def ikb_gpt_menu():
 def ikb_cancel_gpt():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(
-        text = 'Cancel',
+        text = 'Отменить',
         callback_data = CallbackMenu(button = 'start'),
         )
     return keyboard.as_markup()
@@ -72,7 +75,7 @@ def ikb_talk_menu():
             )
         )
     keyboard.button(
-        text = 'In the main menu',
+        text = 'Вернуться в главное меню',
         callback_data = CallbackMenu(button = 'start'),
     )
     keyboard.adjust(1)
@@ -81,7 +84,7 @@ def ikb_talk_menu():
 def ikb_talk_back():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(
-        text = 'Finish',
+        text = 'Закончить',
         callback_data=CallbackMenu(button = 'start'),
     )
     return keyboard.as_markup()
@@ -89,9 +92,9 @@ def ikb_talk_back():
 def ikb_quiz_menu():
     keyboard = InlineKeyboardBuilder()
     buttons = [
-        Button ('Programming', 'quiz_prog'),
-        Button ('Mathematics', 'quiz_math'),
-        Button ('Biology', 'quiz_biology'),
+        Button ('Программирование', 'quiz_prog'),
+        Button ('Математика', 'quiz_math'),
+        Button ('Биология', 'quiz_biology'),
     ]
     for button in buttons:
         keyboard.button(
@@ -102,7 +105,7 @@ def ikb_quiz_menu():
             )
         )
     keyboard.button(
-        text='In the main menu',
+        text='Вернуться в главное меню',
         callback_data=CallbackMenu(button='start'),
         )
     keyboard.adjust(1)
@@ -111,18 +114,74 @@ def ikb_quiz_menu():
 def ikb_quiz_navigation():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(
-        text='Another question',
+        text='Ещё вопрос',
         callback_data=CallbackQuiz(
             button='quiz',
             subject = 'quiz_more'),
     )
     keyboard.button(
-        text='Change topic',
+        text='Поменять тему игры',
         callback_data=CallbackMenu(button='quiz'),
     )
     keyboard.button(
-        text='In the main menu',
+        text='Вернуться в главное меню',
         callback_data=CallbackMenu(button='start'),
         )
     return keyboard.as_markup()
 
+def ikb_translate_menu():
+    keyboard = InlineKeyboardBuilder()
+    buttons = [
+        Button ('Английский', 'translate_en'),
+        Button ('Немецкий', 'translate_de'),
+        Button ('Испанский', 'translate_es'),
+    ]
+    for button in buttons:
+        keyboard.button(
+            text = button.text,
+            callback_data = CallbackTranslate(
+                button = 'translate',
+                language = button.callback,
+            )
+        )
+    keyboard.button(
+        text='Вернуться в главное меню',
+        callback_data=CallbackMenu(button='start'),
+        )
+    keyboard.adjust(1)
+    return keyboard.as_markup()
+
+def ikb_translate_back():
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(
+        text = 'Закончить',
+        callback_data=CallbackMenu(button = 'translate'),
+    )
+    return keyboard.as_markup()
+
+def ikb_voice_gpt_menu():
+    keyboard = InlineKeyboardBuilder()
+    buttons = [
+        Button('Ещё запрос', 'voice'),
+        Button('Закончить', 'start'),
+    ]
+    for button in buttons:
+        keyboard.button(
+            text = button.text,
+            callback_data = CallbackMenu(button = button.callback)
+        )
+    return keyboard.as_markup()
+
+
+def ikb_picture_gpt_menu():
+    keyboard = InlineKeyboardBuilder()
+    buttons = [
+        Button('One more picture', 'picture'),
+        Button('Закончить', 'start'),
+    ]
+    for button in buttons:
+        keyboard.button(
+            text = button.text,
+            callback_data = CallbackMenu(button = button.callback)
+        )
+    return keyboard.as_markup()

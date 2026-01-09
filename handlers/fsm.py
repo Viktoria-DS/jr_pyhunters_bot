@@ -10,3 +10,12 @@ class CelebrityTalk(StatesGroup):
 
 class Quiz(StatesGroup):
     game = State()
+
+class Translator(StatesGroup):
+    translate = State()
+
+class GPTVoice(StatesGroup):
+    wait_for_voice = State()
+
+class GPTImage(StatesGroup):
+    wait_for_image = State()
