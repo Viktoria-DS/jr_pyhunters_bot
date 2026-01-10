@@ -89,18 +89,18 @@ class GPTService:
     async def image_to_text (self, image_bytes: bytes, instruction: str,  bot: Bot) -> str:
         try:
             picture_bytes = base64.b64encode(image_bytes).decode("utf-8")
-            data_url = f"data:image/jpg;base64,{picture_bytes}"
+            data_url = f"data:image/jpeg;base64,{picture_bytes}"
             resp = await self._client.responses.create(
                 model = "gpt-4-turbo",
-                messages = [{
+                input = [{
                     "role": "user",
-                    "content": [{
-                        "type": "text", "text": instruction,
-                        "type": "image_url", "image_url": data_url
-                    }],
+                    "content": [
+                        {"type": "input_text", "text": instruction},
+                        {"type": "input_image", "image_url": data_url}
+                    ],
                 }],
             )
-            return resp.choices[0].message.content
+            return getattr(resp, 'output_text') or ""
         except Exception as e:
             await bot.send_message(
                 chat_id = config.ADMIN_ID,

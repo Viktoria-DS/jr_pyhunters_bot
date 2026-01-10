@@ -145,7 +145,6 @@ async def wait_for_user_request(message: Message, state: FSMContext, bot: Bot):
     tg_file = await bot.get_file(file_id)
     buf = io.BytesIO()
     await bot.download_file(tg_file.file_path, destination = buf)
-    buf.seek(0)
     image_bytes = buf.getvalue()
     result = await chat_gpt.image_to_text(image_bytes, instruction, bot)
     if not result:
