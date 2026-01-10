@@ -16,7 +16,7 @@ def ikb_main_menu():
         Button('Квиз', 'quiz'),
         Button('Переводчик', 'translate'),
         Button('Голосовой разговор с ChatGPT', 'voice'),
-        Button('Picture recognition', 'picture')
+        Button('Описание картинки', 'picture')
     ]
 
     for button in buttons:
@@ -176,7 +176,7 @@ def ikb_voice_gpt_menu():
 def ikb_picture_gpt_menu():
     keyboard = InlineKeyboardBuilder()
     buttons = [
-        Button('One more picture', 'picture'),
+        Button('Описать ещё одну картинку', 'picture'),
         Button('Закончить', 'start'),
     ]
     for button in buttons:

@@ -162,7 +162,7 @@ async def select_language(callback: CallbackQuery, callback_data: CallbackTransl
     await bot.edit_message_media(
         media=InputMediaPhoto(
             media=FSInputFile(Path.IMAGES.value.format(file=callback_data.button)),
-            caption='Ok, send me a text , I will translate it',
+            caption='Пожалуйста, пришли мне текст для перевода',
         ),
         chat_id=callback.from_user.id,
         message_id=callback.message.message_id,
@@ -179,7 +179,7 @@ async def gpt_voice_menu(callback: CallbackQuery, callback_data: CallbackMenu, s
     await bot.edit_message_media(
         media=InputMediaPhoto(
             media=FSInputFile(Path.IMAGES.value.format(file='gpt')),
-            caption = 'Please send me a voice message, I will answer you',
+            caption = 'Пожалуйста, пришли мне голосовое сообщение',
         ),
         chat_id=callback.from_user.id,
         message_id=callback.message.message_id,
@@ -196,7 +196,7 @@ async def gpt_voice_menu(callback: CallbackQuery, callback_data: CallbackMenu, s
     await bot.edit_message_media(
         media=InputMediaPhoto(
             media=FSInputFile(Path.IMAGES.value.format(file='gpt')),
-            caption = 'Please send me picture, I will describe it',
+            caption = 'Пожалуйста, пришли мне картинку для описания',
         ),
         chat_id=callback.from_user.id,
         message_id=callback.message.message_id,
